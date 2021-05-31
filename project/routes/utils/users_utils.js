@@ -23,11 +23,20 @@ async function getTop3FutureFavoriteMatches(user_id) {
 }
 
 async function getFavoriteMatches(user_id) {
+  await DButils.execQuery(`delete from dbo.favorite_matches where user_id=3 
+    and date_match < CAST(CURRENT_TIMESTAMP AS datetime)`);
+
   const matches_ids = await DButils.execQuery(
     `select match_id from dbo.favorite_matches where user_id='${user_id}' 
-    and date_match >= CAST(CURRENT_TIMESTAMP AS datetime) ORDER BY 
-    CONVERT(DateTime, date_match ,101)`
+    ORDER BY CONVERT(DateTime, date_match ,101)`
   );
+  // const matches_ids = await DButils.execQuery(
+  //   `select match_id from dbo.favorite_matches where user_id='${user_id}' 
+  //   and date_match >= CAST(CURRENT_TIMESTAMP AS datetime) ORDER BY 
+  //   CONVERT(DateTime, date_match ,101)`
+  // );
+
+
   return matches_ids;
 }
 
