@@ -50,6 +50,8 @@ router.post("/login", async (req, res, next) => {
 
     // Set cookie
     req.session.user_id = user.user_id;
+    req.session.first_name = user.first_name;
+
 
     // return cookie
     res.status(200).send("login succeeded");
@@ -58,7 +60,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/Logout", function (req, res) {
+router.post("/logout", function (req, res) {
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
   res.send({ success: true, message: "logout succeeded" });
 });

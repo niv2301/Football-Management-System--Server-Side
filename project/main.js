@@ -13,7 +13,8 @@ var cors = require("cors");
 
 ///////////////////api_token=uHIB7fACr8FdE4WzK4T74GvIyWMKN39H54PQ5A9LAHqii9IIUCfbq8FBPqRw
 //////////////////
-//////////////////api_token=MQrj663TjCyoNcPwxCrUFvMYHr9gcrDbYkpgoiSkv8HvQ8Xh4oTfCIpvjEWm
+//////////////////api_token=3gRBTxxCvtpaQ5mlwuPzVqM93Y9wUggl1L8KfSFB0chEgBvH6sLluxjt9ffd
+
 ////////////////api_token=T0ADoysWOUS8vQXEpkj8lOMgPMKQxQsAL7lCRhtFxQbAu0etSLGW2qgLP4xq
 
 
@@ -40,7 +41,7 @@ app.use(express.static(path.join(__dirname, "public"))); //To serve static files
 // https://expressjs.com/en/starter/static-files.html
 app.use(express.static("dist"));
 
-app.get("/api1", (req, res) => {
+app.get("/api_new", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
@@ -59,6 +60,10 @@ const users = require("./routes/users");
 const league = require("./routes/league");
 const teams = require("./routes/teams");
 const search = require("./routes/search");
+const weekly_matches = require("./routes/weekly_matches");
+const manager = require("./routes/league_manager");
+const players = require("./routes/players");
+
 //#endregion
 
 //#region cookie middleware
@@ -86,6 +91,10 @@ app.use("/users", users);
 app.use("/league", league);
 app.use("/teams", teams);
 app.use("/search", search);
+app.use("/weekly_matches", weekly_matches);
+app.use("/league_manager", manager);
+app.use("/players", players);
+
 app.use(auth);
 
 app.use(function (err, req, res, next) {

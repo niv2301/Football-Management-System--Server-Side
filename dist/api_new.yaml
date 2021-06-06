@@ -1,0 +1,651 @@
+---
+openapi: 3.0.3
+info:
+  title: Football Management System
+  description: Football management aystem API for guests and subscribers, for following after the leagues, seasons and stages that interest them.
+  contact:
+    name: Alona Lasry and Niv Meir
+    email: alonalas@post.bgu.ac.il
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: users
+- name: auth
+- name: league
+- name: players
+- name: teams
+- name: weekly_matches
+- name: search
+- name: league_manager
+paths:
+  /register:
+    post:
+      tags:
+        - auth
+      summary: Register a new user to the system
+      description: A json object containing all the requiered details about the new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+        required: true
+      responses:
+        "201":
+          description: user signed up succesfully
+        "409":
+          description: something went wrong
+  /login:
+    post:
+      tags:
+       - auth
+      summary: user login to the system
+      description: A json object containing username and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginScheme'
+        required: true
+      responses:
+        "200":
+          description: user logged in succesfully
+        "400":
+          description: something went wrong
+  /logout:
+    post:
+      tags:
+        - auth
+      summary: logout a user from the system and delete his cookie
+      responses:
+        "200":
+          description: "the user has ben successfully logged out"
+  /user/favoriteMatchesTop3:
+    get:
+      tags:
+        - user
+      summary: returns up to 3 favorite games that the user have chosen
+      description: The games are future games. if the user did not choose any favorite game, an appropriate message will be shown. For each game, The team names will be shown, as well as the schedueled future date.
+      responses:
+        "200":
+          description: Future games found and will be shown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+        "204":
+          description: Future games found but they empty
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+        "404":
+          description: something went wrong
+  /user/favoriteMatches:
+    get:
+      tags:
+        - user
+      summary: get all favorite matches
+      description: The games are future games. if the user did not choose any favorite game, an appropriate message will be shown. For each game, The team names will be shown, as well as the schedueled future date.
+      responses:
+        "200":
+          description: Future games found and will be shown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+        "204":
+          description: favorite games found but they empty
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+        "404":
+          description: something went wrong 
+  /user/AddFavoriteGame:
+    post:
+      tags:
+        - user
+      summary: insert favorite game to user list of favorite games
+      responses:
+        "201":
+          description: Game was added to user favorite list
+        "404":
+          description: something went wrong
+  /teams/teamFullDetails/{teamId}:
+    get:
+      tags:
+        - user
+      summary: returns informational details about team
+      description: 'show all info. For example: all players in team, coach, upcoming and historic games and show the different between them'
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 23
+      responses:
+        "200":
+          description: informational details found and will be shown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/team'
+        "204":
+          description: no information details found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/team'
+        "404":
+          description: something went wrong 
+  /user/ShowPlayerCard/{playerId}:
+    get:
+      tags:
+        - user
+      summary: returns information about the requested player
+      description: 'Show informational details of the player. For example: full name, picture, team,position..'
+      parameters:
+      - name: playerId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 3
+      responses:
+        "200":
+          description: informational details found and will be shown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+  /search/searchPlayerByName/{partialName}:
+    get:
+      tags:
+        - search
+      summary: returns a set of players corresponding to the provided player name.
+      description: 'shows a set of players with the same name as provided in the seach box and a suggestion to reach 
+      their player cards. The name can be either a full name or a partial name.'
+      parameters:
+      - name: partialName
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Messi
+      responses:
+        "200":
+          description: Player/s found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "204":
+          description: No Players to show 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+  /search/searchTeamByName/{partialTeamName}:
+    get:
+      tags:
+        - search
+      summary: returns a set of teams corresponding to the provided team name.
+      description: shows a set of team names and logos with the same name as provided in the seach box
+      parameters:
+      - name: partialTeamName
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Hapoel
+      responses:
+        "200":
+          description: Team/s found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/partialTeamInfo'
+        "204":
+          description: No Teams to show 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+
+    post:
+      tags:
+      - user
+      summary: insert favorite team to user list of favorite teams
+      responses:
+        "200":
+          description: Team was added to user favorite list
+        "404":
+          description: something went wrong
+  /search/searchPlayerByNameAndByPosition/{player_name&position_id}:
+    get:
+      tags:
+        - search
+      summary: returns a set of players corresponding to the provided player name and possition.
+      description: 'shows a set of players with the same name as provided in the seach box and a suggestion to reach
+       their player cards. The name can be either a full name or a partial name.'
+      parameters:
+      - player_name: partialName
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Messi
+      - position_id: position number
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: Messi
+      responses:
+        "200":
+          description: Player/s found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "204":
+          description: No Players to show 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+  /searchPlayerByNameAndByTeam/{player_name&team_name}:
+    get:
+      tags:
+        - search
+      summary: returns a set of players corresponding to the provided player name and team name.
+      description: 'shows a set of players with the same name as provided in the seach box and a suggestion to reach their player cards.
+       The name can be either a full name or a partial name, and the team name can be part of the team name'
+      parameters:
+      - palyer_name: partialName
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Messi
+      - team_name: partialTeamName
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: barcelona
+      responses:
+        "200":
+          description: Player/s found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "204":
+          description: No Players to show 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+  /players/previewPlayerInfo/id/{playerId}:
+    get:
+      tags:
+        - user
+      summary: returns partial information about the requested player
+      description: 'Show informational details of the player. For example: full name, picture, team,position'
+      parameters:
+      - name: playerId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 3
+      responses:
+        "200":
+          description: informational details found and will be shown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+  /players/fullPlayerInfo/id/{playerId}:
+    get:
+      tags:
+        - user
+      summary: returns full information about the requested player
+      description: 'Show informational details of the player. full name, common name, nationality, birth date,
+       birth country, picture, team,position, height, weight'
+      parameters:
+      - name: playerId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 3
+      responses:
+        "200":
+          description: informational details found and will be shown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/player'
+        "404":
+          description: something went wrong
+   /user/currentGames:
+    get:
+      tags:
+      - user
+      summary: 'returns current session games: who already played and upcoming'
+      description: all games from current session will show with information about every game
+      responses:
+        "200":
+          description: shows table of games
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+        "404":
+          description: something went wrong
+  /league/getDetails:
+    get:
+      tags:
+        - league
+      summary: Return the details about the current league
+      responses:
+        "200":
+          description: data about the current league returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/League"
+        "400":
+          description: wrong input parameters
+  /league_manager/:
+    get:
+    tags:
+      - league_manager
+    summary: Return all games in past and future
+    responses:
+      "200":
+        description: games information  returned
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/game"
+      "204":
+          description: No game information to show 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+      "400":
+        description: wrong input parameters
+  /league_manager/addMatch:
+    post:
+      tags:
+      - league_manager
+      summary: insert a game to game table
+      responses:
+        "201":
+          description: Game was added to list
+        "404":
+          description: something went wrong
+  /weekly_matches/:
+    get:
+    tags:
+      - weekly_matches
+    summary: Return all games in past and future in current week of games
+    responses:
+      "200":
+        description: weekly games information  returned
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/game"
+      "204":
+          description: No weekly information2 to show 
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+      "400":
+        description: wrong input pa
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        username:
+          maxLength: 8
+          minLength: 3
+          type: string
+          example: ladygaga
+        firstname:
+          minLength: 2
+          type: string
+          example: Stefany
+        lastname:
+          minLength: 2
+          type: string
+          example: Germanota
+        password:
+          maxLength: 10
+          minLength: 5
+          pattern: /^[a-z0-9A-Z]+@[a-z0-9A-Z]+.[a-zA-Z]/
+          type: string
+          example: guanne@56
+        email:
+          minLength: 5
+          pattern: /^[a-z0-9A-Z]+@[a-z0-9A-Z]+.[a-zA-Z]/
+          type: string
+          example: ladygaga@gmail.com
+        country:
+          type: string
+        image-url:
+          type: object
+        # favoriteGames:
+        #   type: array
+        #   items:
+        #     $ref: '#/components/schemas/game'
+    loginScheme:
+      type: object
+      properties:
+        userName:
+          maxLength: 8
+          minLength: 3
+          type: string
+          example: ladygaga
+        userPassword:
+          maxLength: 10
+          minLength: 5
+          pattern: /^[a-z0-9A-Z]+@[a-z0-9A-Z]+.[a-zA-Z]/
+          type: string
+          example: guanne@56
+    game:
+      type: object
+      properties:
+        gameId:
+          type: integer
+          example: 1
+        date:
+          type: string
+          example: 1/1/2021
+        time:
+          type: string
+          example: "17:00"
+        team1:
+          type: string
+          example: Real Madrid
+        team2:
+          type: string
+          example: Barcelona     
+        Stadium:
+          type: string
+          example: Kamp nou
+        refereeId:
+          type: integer
+          example: 10
+        result:
+          type: string
+          example: 3-0   
+    player:
+      type: object
+      properties:
+        playerId:
+          type: integer
+          example: 3
+        firstName:
+          type: string
+          example: Eran
+        lastName:
+          type: string
+          example: Zehavi
+        TeamName:
+          type: string
+          example: Real Madrid
+        profileImage:
+          type: object
+        positionNumber:
+          type: integer
+          example: 1
+        commonName:
+          type: string
+          example: Erani
+        nation:
+          type: string
+          example: Jewish
+        birthday:
+          type: string
+          example: 02/07/1987
+        countryBirth:
+          type: string
+          example: Israel
+        height:
+          type: integer
+          example: 182
+        weight:
+          type: integer
+          example: 78
+    team:
+      type: object
+      properties:
+        teamId:
+          type: integer
+          example: 23
+        teamName:
+          type: string
+          example: Real Madrid
+        TeamPlayers:
+          type: array
+          items:
+            $ref: '#/components/schemas/player'
+        Coach:
+          type: array
+          items:
+            $ref: '#/components/schemas/coach'
+        futureGames:
+          type: array
+          items:
+            $ref: '#/components/schemas/game'
+        upcomingGames:
+          type: array
+          items:
+            $ref: '#/components/schemas/game'
+    partialTeamInfo:
+      type: object
+      properties:
+        teamName:
+          type: string
+          example: Hapoel Beer Sheva
+        logoImage:
+          type: object
+    eventInGame:
+      type: object
+      properties:
+        eventId:
+          type: integer
+          example: 1
+        dateEvent:
+          type: string
+          example: 1/1/21
+        hour:
+          type: string
+          example: 20:34
+        gameMinute:
+          type: integer
+          example: 50
+        descriptionEvent:
+          type: string
+          example: yellow card to messi
