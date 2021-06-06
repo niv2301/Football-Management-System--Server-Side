@@ -46,7 +46,7 @@ router.get("/searchPlayerByName/:player_name", async (req, res, next) => {
   }
 });
 
-router.get("/searchPlayerByNameAndByPosition/:player_name&:position_id", async (req, res, next) => {
+router.get("/searchPlayerByNameAndByPosition/player_name/:player_name/position_id/:position_id", async (req, res, next) => {
   try {
     const results = await players_utils.searchPlayerByName(req.params.player_name);
     if (results.length == 0)
@@ -54,9 +54,8 @@ router.get("/searchPlayerByNameAndByPosition/:player_name&:position_id", async (
     else{
       let relevant_players = [];
       for (let i = 0; i < results.length; i++){
-          if(results[i].position == parseInt(req.params.position_id)){
+          if(results[i].position == parseInt(req.params.position_id))
             relevant_players.push(results[i]);
-          }
       }
       if (relevant_players.length == 0) {
         if(req.session.user_id)
@@ -76,7 +75,7 @@ router.get("/searchPlayerByNameAndByPosition/:player_name&:position_id", async (
   }
 });
 
-router.get("/searchPlayerByNameAndByTeam/:player_name&:team_name", async (req, res, next) => {
+router.get("/searchPlayerByNameAndByTeam/player_name/:player_name/team_name/:team_name", async (req, res, next) => {
   try {
     const results = await players_utils.searchPlayerByName(req.params.player_name);
     if (results.length == 0)

@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, "public"))); //To serve static files
 // https://expressjs.com/en/starter/static-files.html
 app.use(express.static("dist"));
 
-app.get("/api_new", (req, res) => {
+app.get("/api", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
