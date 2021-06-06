@@ -1,14 +1,16 @@
 const axios = require("axios");
 const { DateTime } = require("mssql");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
+const DButils = require("./DButils");
+const match_utils = require("./match_utils");
 const LEAGUE_ID = 271;
-const SEASON_ID = 17328;
+const SEASON_ID = 18334;
 
 async function searchTeamByName(team_name) {
     const teamsByName = await axios.get(`${api_domain}/teams/search/${team_name}`, {
         params: {
           api_token: process.env.api_token,
-          //include: "team",
+          include: "venue",
         },
     });
 
@@ -33,43 +35,16 @@ function extractRelevantTeamData(teams_array) {
   });
 }
 
-//async function createEventLog()
+async function futureGamesInTeam(team_id) {
+  const future_matches = await DButils.execQuery(
+    `select * from dbo.matches where host_team_id='${team_id}' 
+    or away_team_id='${team_id}' and date_match >= CAST(CURRENT_TIMESTAMP AS datetime) ORDER BY 
+    CONVERT(DateTime, date_match ,101)`
+  );
 
-function createGame(game) {
-  let events_log = [];
-  for (let i = 0 ; i < game.events.data.length; i++) {
-    
-    let event = new Object();
-    event.date = game.time.starting_at.date;
-    let date = new Date(game.time.starting_at.date_time);
-    
-    event.hour = new Date(date.getTime() + game.events.data[i].minute*60000).toString().substr(16,5);
-    event.minute = game.events.data[i].minute;
-    event.description = game.events.data[i].type;
-    event.name_player = game.events.data[i].player_name;      
-    events_log.push(event);
-  }
-  return {
-    date_game : game.time.starting_at.date,
-    hour : game.time.starting_at.time,
-    local_team : game.localTeam.data.name,
-    visitor_team : game.visitorTeam.data.name,
-    venue : game.venue.data.name,
-    image_venue : game.venue.data.image_path,
-    result : game.scores.ft_score,
-    referee : game.referee.data.common_name,
-    events: events_log
-  };
-}
-
-function extractRelevantPastGamesTeamsData(prev_games) {
-
-  let games = [];
-  for (let i = 0 ; i < prev_games.length; i++) {
-    games.push(createGame(prev_games[i]));
-  }
-
-  return games;
+  if (future_matches.length == 0)
+      return future_matches;
+  return await match_utils.extractRelevantGamesData(future_matches);
 }
 
 async function pastGamesInTeam(team_id) {
@@ -86,8 +61,9 @@ async function pastGamesInTeam(team_id) {
 
   if (prev_games.data.data.length == 0)
       return prev_games.data.data;
-  return extractRelevantPastGamesTeamsData(prev_games.data.data);
+  return match_utils.extractRelevantPastGamesData(prev_games.data.data);
 }
 
   exports.searchTeamByName = searchTeamByName;
   exports.pastGamesInTeam = pastGamesInTeam;
+  exports.futureGamesInTeam = futureGamesInTeam;
