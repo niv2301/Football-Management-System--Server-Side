@@ -10,12 +10,13 @@ var path = require("path");
 const session = require("client-sessions");
 var logger = require("morgan");
 var cors = require("cors");
-
+/////////api_token= 3gRBTxxCvtpaQ5mlwuPzVqM93Y9wUggl1L8KfSFB0chEgBvH6sLluxjt9ffd
 ///////////////////api_token=uHIB7fACr8FdE4WzK4T74GvIyWMKN39H54PQ5A9LAHqii9IIUCfbq8FBPqRw
-//////////////////
-//////////////////api_token=3gRBTxxCvtpaQ5mlwuPzVqM93Y9wUggl1L8KfSFB0chEgBvH6sLluxjt9ffd
+//////////////////api_token=MQrj663TjCyoNcPwxCrUFvMYHr9gcrDbYkpgoiSkv8HvQ8Xh4oTfCIpvjEWm
 
-////////////////api_token=T0ADoysWOUS8vQXEpkj8lOMgPMKQxQsAL7lCRhtFxQbAu0etSLGW2qgLP4xq
+//////////////////api_token=uHIB7fACr8FdE4WzK4T74GvIyWMKN39H54PQ5A9LAHqii9IIUCfbq8FBPqRw
+
+////////////////
 
 
 
@@ -68,11 +69,13 @@ const players = require("./routes/players");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM users")
+  console.log(req.session.username + " is here");
+  if (req.session && req.session.username) {
+    console.log("here");
+    DButils.execQuery("SELECT username FROM users")
       .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
+        if (users.find((x) => x.username === req.session.username)) {
+          req.username = req.session.username;
         }
         next();
       })
@@ -109,5 +112,5 @@ const server = app.listen(port, () => {
 // process.on("SIGINT", function () {
 //   if (server) {
 //     server.close(() => console.log("server closed"));
-//   }
+//   }  
 // });

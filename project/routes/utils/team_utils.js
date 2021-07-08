@@ -1,4 +1,5 @@
 const axios = require("axios");
+const exp = require("constants");
 const { DateTime } = require("mssql");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const DButils = require("./DButils");
@@ -23,12 +24,27 @@ async function searchTeamByName(team_name) {
     if (relevant_teams.length == 0)
         return relevant_teams;
     return extractRelevantTeamData(relevant_teams);
-  }
+}
+
+async function generalInfo(team_id) {
+  const teamById = await axios.get(`${api_domain}/teams/${team_id}`, {
+      params: {
+        api_token: process.env.api_token,
+      },
+  });
+
+  return {
+    id: teamById.data.data.id,
+    name: teamById.data.data.name,
+    logo_path: teamById.data.data.logo_path
+  };
+}
   
 function extractRelevantTeamData(teams_array) {
   return teams_array.map((team) => {
-    const { name, logo_path} = team;
+    const { name, logo_path, id} = team;
     return {
+      team_id: id,
       team_name: name,
       logo: logo_path,
     };
@@ -64,6 +80,7 @@ async function pastGamesInTeam(team_id) {
   return match_utils.extractRelevantPastGamesData(prev_games.data.data);
 }
 
+  exports.generalInfo = generalInfo;
   exports.searchTeamByName = searchTeamByName;
   exports.pastGamesInTeam = pastGamesInTeam;
   exports.futureGamesInTeam = futureGamesInTeam;

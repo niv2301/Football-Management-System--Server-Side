@@ -6,10 +6,10 @@ const manager_utils = require("./utils/manager_utils");
 
 
 router.use(async function (req, res, next) {
-    if (req.session && req.session.user_id) {
+    if (req.session && req.session.username) {
       await manager_utils.getManager()
         .then((manager) => {
-          if (manager.user_id == req.session.user_id) {
+          if (manager.username == req.session.username) {
             next();
           }
           else 

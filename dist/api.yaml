@@ -8,7 +8,7 @@ info:
     email: alonalas@post.bgu.ac.il
   version: 1.0.0
 servers:
-- url: /
+  url: http://localhost:3000
 tags:
 - name: users
 - name: auth
@@ -477,6 +477,9 @@ components:
         date:
           type: string
           example: 1/1/2021
+        username:
+          type: string
+          example: dani
     player:
       type: object
       properties:

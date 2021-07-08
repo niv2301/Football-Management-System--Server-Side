@@ -113,6 +113,7 @@ async function createGame(game) {
     };
   }
   return {
+    match_id : game.match_id,
     date_game : date_match,
     hour : time_match,
     local_team : host_team_name,
@@ -137,6 +138,7 @@ function createPastGame(game) {
     events_log.push(event);
   }
   return {
+    match_id : game.id,
     date_game : game.time.starting_at.date,
     hour : game.time.starting_at.time,
     local_team : game.localTeam.data.name,
