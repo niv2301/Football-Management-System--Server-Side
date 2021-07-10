@@ -4,6 +4,14 @@ const DButils = require("./utils/DButils");
 const players_utils = require("./utils/players_utils");
 const team_utils = require("./utils/team_utils");
 
+router.use("/lastQueryResults", async(req,res,next)=>{
+  if(req.session && req.session.username){
+      next();
+  }
+  else{
+      res.status(401).send("user is not logged in");
+  }
+});
 
 router.get("/searchTeamByName/:team_name", async (req, res, next) => {
     try {
@@ -25,7 +33,6 @@ router.get("/searchTeamByName/:team_name", async (req, res, next) => {
     }
   });
 
-
 router.get("/searchPlayerByName/:player_name", async (req, res, next) => {
   try {
     const results = await players_utils.searchPlayerByName(req.params.player_name);
@@ -45,6 +52,19 @@ router.get("/searchPlayerByName/:player_name", async (req, res, next) => {
     next(error);
   }
 });
+
+router.get("/lastQueryResults",async(req,res)=>{
+  if(!req.session.last_executed_query_results){
+      res.sendStatus(204);
+  }
+  else{
+      results = [req.session.last_executed_query, req.session.last_executed_query_results];
+      res.status(200).send(results);
+  }
+  
+});
+
+
 
 router.get("/searchPlayerByNameAndByPosition/player_name/:player_name/position_id/:position_id", async (req, res, next) => {
   try {

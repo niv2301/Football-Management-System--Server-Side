@@ -19,11 +19,6 @@ router.use(async function (req, res, next) {
       })
       .catch((err) => next(err));
   } else {
-    // console.log(req);
-    // console.log("------------");
-    // console.log(req.session);
-    // console.log("------------");
-    // console.log(req.session.username);
     res.sendStatus(401);
   }
 });
@@ -49,10 +44,6 @@ router.get("/favoriteMatchesTop3", async (req, res, next) => {
     next(error);
   }
 });
-
-
-
-
 
 /**
  * This path gets body with playerId and save this player in the favorites list of the logged-in user
@@ -108,10 +99,11 @@ router.post("/addMatchToFavorite", async (req, res, next) => {
   try {
     const username = req.session.username;
     const match_id = req.body.match_id;
-    await users_utils.markMatchAsFavorite(username, match_id);
+    const user_id = req.session.user_id;
+    await users_utils.markMatchAsFavorite(user_id,username, match_id);
     res.status(201).send("The match successfully saved as favorite");
   } catch (error) {
-    next(error);
+      res.status(400).send("internal server error");
   }
 });
 

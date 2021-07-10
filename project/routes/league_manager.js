@@ -6,10 +6,10 @@ const manager_utils = require("./utils/manager_utils");
 
 
 router.use(async function (req, res, next) {
-    if (req.session && req.session.username) {
+    if (req.session && req.session.user_id) {
       await manager_utils.getManager()
         .then((manager) => {
-          if (manager.username == req.session.username) {
+          if (manager.user_id == req.session.user_id) {
             next();
           }
           else 
@@ -20,20 +20,24 @@ router.use(async function (req, res, next) {
     }
   });
 
-router.get("/", async (req, res, next) => {
-  try {
-      
-      const all_matches = await match_utils.getAllMatches();
-      const all_matches_relevant_info = await match_utils.extractRelevantGamesData(all_matches);
-      if (all_matches.length == 0)
-        res.send({ success: 204, message: "no games found" });
-      else
-          res.status(200).send(all_matches_relevant_info);
-  }
-  catch (error) {
-      next(error);
-  }
-  });
+  router.get("/", async (req, res, next) => {
+    try {
+        
+        const all_matches = await match_utils.getAllMatches();
+        const all_matches_relevant_info = await match_utils.extractRelevantGamesData(all_matches);
+        let result =[];
+        for(let i =0; i<all_matches_relevant_info.length; i++){
+          result.push(await match_utils.AddEventLogAndResult(all_matches_relevant_info[i]));
+        }
+        if (all_matches.length == 0)
+          res.send({ success: 204, message: "no games found" });
+        else
+            res.status(200).send(result);
+    }
+    catch (error) {
+        next(error);
+    }
+    });
 
 router.post("/addMatch", async (req, res, next) => {
   try {

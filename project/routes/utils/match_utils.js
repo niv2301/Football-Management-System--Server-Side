@@ -41,35 +41,6 @@ async function getFutureWeeklyMatches() {
   return future_matches;
 }
 
-async function getPlayersInfo(players_ids_list) {
-  let promises = [];
-  players_ids_list.map((id) =>
-    promises.push(
-      axios.get(`${api_domain}/players/${id}`, {
-        params: {
-          api_token: process.env.api_token,
-          include: "team",
-        },
-      })
-    )
-  );
-  let players_info = await Promise.all(promises);
-  return extractRelevantPlayerData(players_info);
-}
-
-function extractRelevantPlayerData(players_info) {
-  return players_info.map((player_info) => {
-    const { fullname, image_path, position_id } = player_info.data.data;
-    const { name } = player_info.data.data.team.data;
-    return {
-      name: fullname,
-      image: image_path,
-      position: position_id,
-      team_name: name,
-    };
-  });
-}
-
 async function getAllMatches(){
   const all_matches = await DButils.execQuery(
     `select * from dbo.matches ORDER BY CONVERT(DateTime, date_match ,101)`
@@ -106,8 +77,11 @@ async function createGame(game) {
       hour : time_match,
       full_date : isoDate,
       local_team : host_team_name,
+      local_team_id : team1.data.data.id,
       visitor_team : away_team_name,
+      visitor_team_id : team2.data.data.id,
       venue : venue_name,
+      referee_id : game.referee_id,
       image_venue : team1.data.data.venue.data.image_path,
       result: game.match_result
     };
@@ -117,8 +91,11 @@ async function createGame(game) {
     date_game : date_match,
     hour : time_match,
     local_team : host_team_name,
+    local_team_id : team1.data.data.id,
     visitor_team : away_team_name,
+    visitor_team_id : team2.data.data.id,
     venue : venue_name,
+    referee_id : game.referee_id,
     image_venue : team1.data.data.venue.data.image_path,
   };
 }

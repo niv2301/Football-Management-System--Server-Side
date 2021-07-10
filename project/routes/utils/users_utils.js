@@ -7,8 +7,7 @@ const match_utils = require("./match_utils");
   this function assumes that user only can add a future games to his favorites
   (The selection will be made solely from the table of future games)
  */
-async function markMatchAsFavorite(username, match_id) {
-
+async function markMatchAsFavorite(user_id, username, match_id) {
   const isoDateString = await DButils.execQuery(
     `select date_match from dbo.matches where match_id='${match_id}'`
   );
@@ -16,7 +15,7 @@ async function markMatchAsFavorite(username, match_id) {
   const mySQLDateString2 = isoDate.toJSON().slice(0, 19);
 
   await DButils.execQuery(
-  `insert into dbo.favorite_matches values ('15','${match_id}','${mySQLDateString2}', '${username}')`
+  `insert into dbo.favorite_matches values ('${user_id}','${match_id}','${mySQLDateString2}', '${username}')`
   );
 }
 
@@ -56,7 +55,7 @@ async function getFavoriteMatches(username) {
 async function getFavoriteMatchesDetails(matches_ids) {
 
   const matches = await DButils.execQuery(
-    `select host_team_id,away_team_id,date_match,stadium_id from dbo.matches where match_id
+    `select match_id, host_team_id,away_team_id,date_match,stadium_id from dbo.matches where match_id
      IN (${matches_ids})  ORDER BY date_match`
   );
   return await match_utils.extractRelevantGamesData(matches);

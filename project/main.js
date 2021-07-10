@@ -10,11 +10,12 @@ var path = require("path");
 const session = require("client-sessions");
 var logger = require("morgan");
 var cors = require("cors");
-/////////api_token= 3gRBTxxCvtpaQ5mlwuPzVqM93Y9wUggl1L8KfSFB0chEgBvH6sLluxjt9ffd
-///////////////////api_token=uHIB7fACr8FdE4WzK4T74GvIyWMKN39H54PQ5A9LAHqii9IIUCfbq8FBPqRw
-//////////////////api_token=MQrj663TjCyoNcPwxCrUFvMYHr9gcrDbYkpgoiSkv8HvQ8Xh4oTfCIpvjEWm
+/////////api_token=uHIB7fACr8FdE4WzK4T74GvIyWMKN39H54PQ5A9LAHqii9IIUCfbq8FBPqRw
+//////////api_token=MQrj663TjCyoNcPwxCrUFvMYHr9gcrDbYkpgoiSkv8HvQ8Xh4oTfCIpvjEWm
 
-//////////////////api_token=uHIB7fACr8FdE4WzK4T74GvIyWMKN39H54PQ5A9LAHqii9IIUCfbq8FBPqRw
+//////////fxYhZwWEliysTIU3GeGsftRWmHh1vjbfZEixtpBN7EMjRwCryuochLGQEGbk
+//////////////////api_token= 3gRBTxxCvtpaQ5mlwuPzVqM93Y9wUggl1L8KfSFB0chEgBvH6sLluxjt9ffd
+
 
 ////////////////
 
@@ -69,9 +70,7 @@ const players = require("./routes/players");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
-  console.log(req.session.username + " is here");
   if (req.session && req.session.username) {
-    console.log("here");
     DButils.execQuery("SELECT username FROM users")
       .then((users) => {
         if (users.find((x) => x.username === req.session.username)) {

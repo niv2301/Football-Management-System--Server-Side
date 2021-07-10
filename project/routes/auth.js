@@ -39,7 +39,6 @@ router.post("/login", async (req, res, next) => {
         `SELECT * FROM dbo.users WHERE username = '${req.body.username}'`
       )
     )[0];
-    // user = user[0];
     console.log(user);
 
     // check that username exists & the password is correct

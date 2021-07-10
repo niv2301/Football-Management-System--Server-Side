@@ -26,6 +26,20 @@ async function searchTeamByName(team_name) {
     return extractRelevantTeamData(relevant_teams);
 }
 
+async function getTeamsNames(SEASON_ID) {
+  const teams = await axios.get(`${api_domain}/teams/season/${SEASON_ID}`, {
+    params: {
+      api_token: process.env.api_token,
+    },
+  });
+  const team_names = [];
+  for (var i = 0 ; i < teams.data.data.length; i++) {
+    team_names.push(teams.data.data[i].name);
+  }
+  return team_names;
+}
+
+getTeamsNames
 async function generalInfo(team_id) {
   const teamById = await axios.get(`${api_domain}/teams/${team_id}`, {
       params: {
@@ -84,3 +98,4 @@ async function pastGamesInTeam(team_id) {
   exports.searchTeamByName = searchTeamByName;
   exports.pastGamesInTeam = pastGamesInTeam;
   exports.futureGamesInTeam = futureGamesInTeam;
+  exports.getTeamsNames = getTeamsNames;

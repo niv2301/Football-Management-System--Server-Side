@@ -3,6 +3,7 @@ var router = express.Router();
 const DButils = require("./utils/DButils");
 const players_utils = require("./utils/players_utils");
 const team_utils = require("./utils/team_utils");
+const SEASON_ID = 18334;
 
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
  
@@ -18,6 +19,16 @@ router.get("/teamFullDetails/:teamId", async (req, res, next) => {
         res.send({ status: 204, message: "no information found" });
     else
         res.status(200).send(result);
+  }
+  catch (error) {
+    next(error);
+  }
+});
+
+router.get("/getAllTeamNames", async (req, res, next) => {
+  try {
+    const teams_names = await team_utils.getTeamsNames(SEASON_ID);
+    res.status(200).send(teams_names);
   }
   catch (error) {
     next(error);
